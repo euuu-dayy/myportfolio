@@ -57,7 +57,7 @@ function Navbar() {
 
             <li className="nav-item ms-lg-3">
               <a
-                href="http://localhost:5000/uploads/resume.pdf"
+                href="https://myportfolio-rrdj.onrender.com/uploads/resume.pdf"
                 target="_blank"
                 className="btn btn-dark btn-sm"
               >
