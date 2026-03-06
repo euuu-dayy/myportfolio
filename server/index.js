@@ -5,6 +5,7 @@ const cors = require("cors")
 const nodemailer = require("nodemailer")
 const multer = require("multer")
 const path = require("path")
+const fs = require("fs")
 
 const app = express()
 const PORT = process.env.PORT || 5000
@@ -12,23 +13,32 @@ const PORT = process.env.PORT || 5000
 app.use(cors())
 app.use(express.json())
 
-app.use("/uploads", express.static("uploads", {
-  setHeaders: (res) => {
-    res.setHeader("Cache-Control", "no-store")
-  }
-}))
+app.use("/uploads", express.static("uploads"))
+
+/* -------------------------
+   STORE LATEST RESUME NAME
+--------------------------*/
+
+let latestResume = null
 
 /* -------------------------
    MULTER CONFIG
 --------------------------*/
 
 const storage = multer.diskStorage({
+
 destination: function (req, file, cb) {
-cb(null, "uploads/")
+  cb(null, "uploads/")
 },
+
 filename: function (req, file, cb) {
-cb(null, "resume.pdf")
+
+  const filename = Date.now() + "-resume.pdf"
+  latestResume = filename
+  cb(null, filename)
+
 }
+
 })
 
 const upload = multer({ storage })
@@ -38,7 +48,44 @@ const upload = multer({ storage })
 --------------------------*/
 
 app.post("/upload", upload.single("resume"), (req, res) => {
-res.json({ message: "Resume uploaded successfully" })
+
+latestResume = req.file.filename
+
+res.json({
+message: "Resume uploaded successfully",
+file: req.file.filename
+})
+
+})
+
+/* -------------------------
+   VIEW RESUME
+--------------------------*/
+
+app.get("/view-resume", (req,res)=>{
+
+if(!latestResume){
+return res.status(404).json({message:"No resume uploaded"})
+}
+
+res.redirect(`/uploads/${latestResume}`)
+
+})
+
+/* -------------------------
+   DOWNLOAD RESUME
+--------------------------*/
+
+app.get("/download-resume", (req,res)=>{
+
+if(!latestResume){
+return res.status(404).json({message:"No resume uploaded"})
+}
+
+const filePath = path.join(__dirname,"uploads",latestResume)
+
+res.download(filePath,"Uday_Kaple_Resume.pdf")
+
 })
 
 /* -------------------------
@@ -93,13 +140,8 @@ res.status(500).json({ success: false, error: err.message })
 })
 
 /* -------------------------
-   DOWNLOAD RESUME  
+   START SERVER
 --------------------------*/
-
-app.get("/download-resume", (req, res) => {
-const filePath = path.join(__dirname, "uploads", "resume.pdf")
-res.download(filePath, "Uday_Kaple_Resume.pdf")
-})
 
 app.listen(PORT, () => {
 console.log(`Server running on port ${PORT}`)
