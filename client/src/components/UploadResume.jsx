@@ -11,7 +11,7 @@ const formData = new FormData()
 
 formData.append("resume",file)
 
-await axios.post("http://https://myportfolio-rrdj.onrender.com/upload",formData)
+await axios.post("https://myportfolio-rrdj.onrender.com/upload",formData)
 
 alert("Resume uploaded")
 
