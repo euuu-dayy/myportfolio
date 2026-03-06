@@ -52,7 +52,7 @@ React, Node.js and Java Springboot REST APIS.
 <div className="mt-4">
 
 <a
-href="http://localhost:5000/uploads/resume.pdf"
+href="https://myportfolio-rrdj.onrender.com/uploads/resume.pdf"
 target="_blank"
 className="btn btn-dark me-3"
 >
@@ -60,7 +60,7 @@ View Resume
 </a>
 
 <a
-href="http://localhost:5000/download-resume"
+href="https://myportfolio-rrdj.onrender.com/download-resume"
 className="btn btn-outline-dark"
 >
 Download Resume

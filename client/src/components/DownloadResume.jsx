@@ -5,7 +5,7 @@ return(
 <div className="text-center py-5">
 
 <a
-href="http://localhost:5000/resume.pdf"
+href="https://myportfolio-rrdj.onrender.com/download-resume"
 className="btn btn-dark"
 >
 

@@ -56,31 +56,27 @@ const { name, email, message } = req.body
 try {
 
 const transporter = nodemailer.createTransport({
-
-service: "gmail",
-
-auth:{
-user:process.env.EMAIL_USER,
-pass:process.env.EMAIL_PASS
-}
-
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  auth:{
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  }
 })
 
 await transporter.sendMail({
-
-from: email,
-to: process.env.EMAIL_USER,
-
-subject: `Portfolio Contact from ${name}`,
-
-text: `
+  from: `"Portfolio Contact" <${process.env.EMAIL_USER}>`,
+  replyTo: email,
+  to: process.env.EMAIL_USER,
+  subject: `Portfolio Contact from ${name}`,
+  text: `
 Name: ${name}
 Email: ${email}
 
 Message:
 ${message}
 `
-
 })
 
 res.json({ success: true })
@@ -89,21 +85,9 @@ res.json({ success: true })
 
 catch (err) {
 
-console.log(err)
+console.error("EMAIL ERROR:", err)
 res.status(500).json({ success: false })
 
 }
-
-})
-
-app.listen(PORT, () => {
-  console.log("Server running")
-})
-
-app.get("/download-resume", (req, res) => {
-
-const filePath = path.join(__dirname, "uploads", "resume.pdf")
-
-res.download(filePath, "Uday_Kaple_Resume.pdf")
 
 })

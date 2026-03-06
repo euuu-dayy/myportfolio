@@ -19,7 +19,7 @@ e.preventDefault()
 
 try{
 
-await axios.post("http://localhost:5000/send-email",form)
+await axios.post("https://myportfolio-rrdj.onrender.com/send-email",form)
 
 alert("Message sent successfully")
 
