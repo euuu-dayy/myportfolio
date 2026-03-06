@@ -28,7 +28,7 @@ initial={{x:-80,opacity:0}}
 whileInView={{x:0,opacity:1}}
 transition={{duration:0.8}}
 
-src="/src/assets/me.jpg"
+src="/me.jpg"
 className="img-fluid rounded"
 alt="developer"
 />
