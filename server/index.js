@@ -1,9 +1,12 @@
+
+require("dotenv").config()
+
 const express = require("express")
 const cors = require("cors")
 const nodemailer = require("nodemailer")
 const multer = require("multer")
 const path = require("path")
-
+const PORT = process.env.PORT || 5000
 const app = express()
 
 app.use(cors())
@@ -56,9 +59,9 @@ const transporter = nodemailer.createTransport({
 
 service: "gmail",
 
-auth: {
-user: "udaykaple2004@gmail.com",
-pass: "cahx mtek oavy wwau"
+auth:{
+user:process.env.EMAIL_USER,
+pass:process.env.EMAIL_PASS
 }
 
 })
@@ -66,7 +69,7 @@ pass: "cahx mtek oavy wwau"
 await transporter.sendMail({
 
 from: email,
-to: "udaykaple2004@gmail.com",
+to: process.env.EMAIL_USER,
 
 subject: `Portfolio Contact from ${name}`,
 
@@ -93,10 +96,8 @@ res.status(500).json({ success: false })
 
 })
 
-app.listen(5000, () => {
-
-console.log("Server running on port 5000")
-
+app.listen(PORT, () => {
+  console.log("Server running")
 })
 
 app.get("/download-resume", (req, res) => {
