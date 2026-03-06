@@ -1,0 +1,21 @@
+html{
+scroll-behavior:smooth;
+}
+
+body{
+padding-top:75px;
+
+}
+
+section{
+padding-top:60px;
+padding-bottom:60px;
+}
+
+.navbar{
+height:70px;
+}
+
+html, body {
+  overflow-x: hidden;
+}
