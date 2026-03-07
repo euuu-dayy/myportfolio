@@ -43,14 +43,16 @@ function getLatestResume() {
 
 const dir = path.join(__dirname, "uploads")
 
+if (!fs.existsSync(dir)) return null
+
 const files = fs.readdirSync(dir)
 
-if(files.length === 0) return null
+if (files.length === 0) return null
 
-files.sort((a,b)=>{
+files.sort((a, b) => {
 
-return fs.statSync(path.join(dir,b)).mtime.getTime() -
-       fs.statSync(path.join(dir,a)).mtime.getTime()
+return fs.statSync(path.join(dir, b)).mtime.getTime() -
+       fs.statSync(path.join(dir, a)).mtime.getTime()
 
 })
 
@@ -72,18 +74,24 @@ file: req.file.filename
 })
 
 /* -------------------------
-   VIEW RESUME (OPEN PDF)
+   VIEW RESUME
 --------------------------*/
 
-app.get("/view-resume", (req,res)=>{
+app.get("/view-resume", (req, res) => {
 
 const latestResume = getLatestResume()
 
-if(!latestResume){
-return res.status(404).json({message:"No resume uploaded"})
+if (!latestResume) {
+return res.status(404).json({ message: "No resume uploaded" })
 }
 
-const filePath = path.join(__dirname,"uploads",latestResume)
+const filePath = path.join(__dirname, "uploads", latestResume)
+
+// prevent caching
+res.setHeader("Cache-Control", "no-store")
+res.setHeader("Pragma", "no-cache")
+res.setHeader("Expires", "0")
+res.setHeader("Content-Type", "application/pdf")
 
 res.sendFile(filePath)
 
@@ -93,17 +101,19 @@ res.sendFile(filePath)
    DOWNLOAD RESUME
 --------------------------*/
 
-app.get("/download-resume", (req,res)=>{
+app.get("/download-resume", (req, res) => {
 
 const latestResume = getLatestResume()
 
-if(!latestResume){
-return res.status(404).json({message:"No resume uploaded"})
+if (!latestResume) {
+return res.status(404).json({ message: "No resume uploaded" })
 }
 
-const filePath = path.join(__dirname,"uploads",latestResume)
+const filePath = path.join(__dirname, "uploads", latestResume)
 
-res.download(filePath,"Uday_Kaple_Resume.pdf")
+res.setHeader("Cache-Control", "no-store")
+
+res.download(filePath, "Uday_Kaple_Resume.pdf")
 
 })
 
@@ -125,9 +135,9 @@ const transporter = nodemailer.createTransport({
 host: "smtp.gmail.com",
 port: 465,
 secure: true,
-auth:{
+auth: {
 user: process.env.EMAIL_USER,
-pass: process.env.EMAIL_PASS,
+pass: process.env.EMAIL_PASS
 }
 })
 
