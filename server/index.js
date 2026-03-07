@@ -66,6 +66,12 @@ return files[0]
 
 app.post("/upload", upload.single("resume"), (req, res) => {
 
+const adminPassword = req.headers["admin-password"]
+
+if(adminPassword !== process.env.ADMIN_PASSWORD){
+return res.status(401).json({message:"Unauthorized"})
+}
+
 res.json({
 message: "Resume uploaded successfully",
 file: req.file.filename
