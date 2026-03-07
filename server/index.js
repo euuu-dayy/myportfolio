@@ -13,13 +13,8 @@ const PORT = process.env.PORT || 5000
 app.use(cors())
 app.use(express.json())
 
+// serve uploads folder
 app.use("/uploads", express.static("uploads"))
-
-/* -------------------------
-   STORE LATEST RESUME NAME
---------------------------*/
-
-let latestResume = null
 
 /* -------------------------
    MULTER CONFIG
@@ -32,11 +27,8 @@ destination: function (req, file, cb) {
 },
 
 filename: function (req, file, cb) {
-
   const filename = Date.now() + "-resume.pdf"
-  latestResume = filename
   cb(null, filename)
-
 }
 
 })
@@ -44,12 +36,33 @@ filename: function (req, file, cb) {
 const upload = multer({ storage })
 
 /* -------------------------
+   FIND LATEST RESUME
+--------------------------*/
+
+function getLatestResume() {
+
+const dir = path.join(__dirname, "uploads")
+
+const files = fs.readdirSync(dir)
+
+if(files.length === 0) return null
+
+files.sort((a,b)=>{
+
+return fs.statSync(path.join(dir,b)).mtime.getTime() -
+       fs.statSync(path.join(dir,a)).mtime.getTime()
+
+})
+
+return files[0]
+
+}
+
+/* -------------------------
    RESUME UPLOAD
 --------------------------*/
 
 app.post("/upload", upload.single("resume"), (req, res) => {
-
-latestResume = req.file.filename
 
 res.json({
 message: "Resume uploaded successfully",
@@ -59,16 +72,20 @@ file: req.file.filename
 })
 
 /* -------------------------
-   VIEW RESUME
+   VIEW RESUME (OPEN PDF)
 --------------------------*/
 
 app.get("/view-resume", (req,res)=>{
+
+const latestResume = getLatestResume()
 
 if(!latestResume){
 return res.status(404).json({message:"No resume uploaded"})
 }
 
-res.redirect(`/uploads/${latestResume}`)
+const filePath = path.join(__dirname,"uploads",latestResume)
+
+res.sendFile(filePath)
 
 })
 
@@ -77,6 +94,8 @@ res.redirect(`/uploads/${latestResume}`)
 --------------------------*/
 
 app.get("/download-resume", (req,res)=>{
+
+const latestResume = getLatestResume()
 
 if(!latestResume){
 return res.status(404).json({message:"No resume uploaded"})
